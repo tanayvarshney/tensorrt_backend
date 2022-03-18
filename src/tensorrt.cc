@@ -5301,6 +5301,10 @@ if (handle == nullptr)
     std::cout << "Could not load plugin library: " << path << ", due to: " << dlerror() << std::endl;
     #endif
   }
+else
+  {
+    std::cout << "Successfully loaded plugin library: " << path << std::endl;
+  }
 }
 
 // Implementing TRITONBACKEND_Initialize is optional. The backend
@@ -5385,7 +5389,7 @@ TRITONBACKEND_Initialize(TRITONBACKEND_Backend* backend)
       std::string plugin;
       // Load individual plugins
       while (value_str.length() > 0) {
-        pos = value_str.find("+");
+        pos = value_str.find(";");
         plugin = value_str.substr(0, pos);
         LoadPlugin(plugin);
         if(pos != std::string::npos){
