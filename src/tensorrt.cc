@@ -2205,7 +2205,7 @@ ModelInstanceState::Run(
     if (UseTensorRTv2API(engine_)) {
       if (!citr->second.context_->enqueueV2(
               buffer_bindings_[next_buffer_binding_set_].data(), stream_,
-              &events_[next_set_].ready_for_input_)) {
+              nullptr)) {
         cudaStreamSynchronize(stream_);
         FAIL_ALL_AND_RETURN_IF_ERROR(
             payload_->requests_, payload_->request_count_, payload_->responses_,
@@ -2219,7 +2219,7 @@ ModelInstanceState::Run(
       if (!citr->second.context_->enqueue(
               payload_->total_batch_size_,
               buffer_bindings_[next_buffer_binding_set_].data(), stream_,
-              &events_[next_set_].ready_for_input_)) {
+              nullptr)) {
         cudaStreamSynchronize(stream_);
         FAIL_ALL_AND_RETURN_IF_ERROR(
             payload_->requests_, payload_->request_count_, payload_->responses_,
@@ -2232,6 +2232,7 @@ ModelInstanceState::Run(
     }
   }
 
+  cudaEventRecord(events_[next_set_].ready_for_input_, stream_);
   cudaEventRecord(events_[next_set_].ready_for_output_, stream_);
 
 #ifdef TRITON_ENABLE_STATS
